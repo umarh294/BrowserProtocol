@@ -4,6 +4,8 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QLi
 from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEngineUrlRequestInterceptor, QWebEngineUrlRequestInfo
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from ad_blocker_trie import AdBlockTrie
+from rule_parser import RuleParser
+
 
 class NetworkInterceptor(QWebEngineUrlRequestInterceptor):
     def __init__(self, trie_engine: AdBlockTrie):
@@ -51,16 +53,13 @@ class CustomBrowser(QMainWindow):
         self.setCentralWidget(container)
 
     def load_mock_blocklist(self):
-        """Simulating loading standard open-source telemetry/ad blocklists"""
-        common_ad_domains = [
-            "doubleclick.net",
-            "googleads.g.doubleclick.net",
-            "pagead2.googlesyndication.com",
-            "analytics.google.com",
-            "adservice.google.com"
-        ]
-        for domain in common_ad_domains:
-            self.trie.insert(domain)
+        """Streams real, high-volume production blocklists directly into memory"""
+        print("📥 Initializing live blocklist synchronization...")
+        self.parser = RuleParser(self.trie)
+        
+        # This streams over 50,000+ real-world tracking rules into your Trie on startup
+        rules_loaded = self.parser.fetch_and_populate()
+        print(f"🚀 Navigation engine armed with {rules_loaded:,} rules.")
 
     def navigate_to_url(self):
         url = self.url_bar.text()
