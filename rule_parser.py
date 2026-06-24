@@ -56,6 +56,9 @@ if __name__ == "__main__":
     parser = RuleParser(test_trie)
     count = parser.fetch_and_populate()
     
-    # Run a spot verification check against known standard tracker strings
+    # 1. Run a spot verification check against a deep URL path string
     test_url = "https://analytics.google.com/api/v2/track"
-    print(f"🔍 Validation check for '{test_url}': Blocked = {test_trie.should_block(test_url)}")
+    print(f"🔍 Path Check for '{test_url}': Blocked = {test_trie.should_block(test_url)}")
+
+    # 2. Correctly scoped strict base domain query
+    print(f"🎯 Strict Domain Match: {test_trie._search_exact('analytics.google.com')}")
