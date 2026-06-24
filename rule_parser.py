@@ -51,14 +51,14 @@ class RuleParser:
         return rules_added
 
 if __name__ == "__main__":
-    # Quick structural isolation test
     test_trie = AdBlockTrie()
     parser = RuleParser(test_trie)
     count = parser.fetch_and_populate()
     
-    # 1. Run a spot verification check against a deep URL path string
-    test_url = "https://analytics.google.com/api/v2/track"
-    print(f"🔍 Path Check for '{test_url}': Blocked = {test_trie.should_block(test_url)}")
-
-    # 2. Correctly scoped strict base domain query
-    print(f"🎯 Strict Domain Match: {test_trie._search_exact('analytics.google.com')}")
+    # AdAway explicitly blocks 'analytics.edgekey.net'
+    # We will test a heavily nested, dynamic subdomain to prove the suffix matching works!
+    test_url = "https://us-east-cdn.tracker.prod.analytics.edgekey.net/v1/log"
+    
+    print("\n--- 🛠️ TESTING SUITE ---")
+    print(f"📡 Evaluating nested request: {test_url}")
+    print(f"🔒 Suffix Interception Engine Result: Blocked = {test_trie.should_block(test_url)}")
